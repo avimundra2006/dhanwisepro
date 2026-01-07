@@ -53,10 +53,16 @@ export function useTransactions() {
       return acc;
     }, {} as Record<string, number>);
 
+  const clearAllTransactions = () => {
+    setTransactions([]);
+    localStorage.removeItem(STORAGE_KEY);
+  };
+
   return {
     transactions,
     addTransaction,
     deleteTransaction,
+    clearAllTransactions,
     totalIncome: totals.income,
     totalExpenses: totals.expenses,
     balance: totals.income - totals.expenses,
