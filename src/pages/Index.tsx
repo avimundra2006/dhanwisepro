@@ -1,11 +1,18 @@
+import { useState } from 'react';
 import { useTransactions } from '@/hooks/useTransactions';
-import { StatCard } from '@/components/StatCard';
-import { TransactionForm } from '@/components/TransactionForm';
-import { TransactionList } from '@/components/TransactionList';
-import { SpendingChart } from '@/components/SpendingChart';
-import { Wallet, TrendingUp, TrendingDown } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { AuthPage } from '@/components/AuthPage';
+import { Sidebar } from '@/components/Sidebar';
+import { DashboardView } from '@/components/DashboardView';
+import { TransactionsView } from '@/components/TransactionsView';
+import { ReportsView } from '@/components/ReportsView';
+import { SettingsView } from '@/components/SettingsView';
+
+type View = 'dashboard' | 'transactions' | 'reports' | 'settings';
 
 const Index = () => {
+  const { user, isLoading, isAuthenticated, login, signUp, logout } = useAuth();
+  const [currentView, setCurrentView] = useState<View>('dashboard');
   const {
     transactions,
     addTransaction,
@@ -14,72 +21,82 @@ const Index = () => {
     totalExpenses,
     balance,
     categoryData,
+    clearAllTransactions,
   } = useTransactions();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <AuthPage onLogin={login} onSignUp={signUp} />;
+  }
+
+  const renderView = () => {
+    switch (currentView) {
+      case 'dashboard':
+        return (
+          <DashboardView
+            transactions={transactions}
+            totalIncome={totalIncome}
+            totalExpenses={totalExpenses}
+            balance={balance}
+            categoryData={categoryData}
+            onAddTransaction={addTransaction}
+            onDeleteTransaction={deleteTransaction}
+            userName={user?.name || 'User'}
+          />
+        );
+      case 'transactions':
+        return (
+          <TransactionsView
+            transactions={transactions}
+            onAddTransaction={addTransaction}
+            onDeleteTransaction={deleteTransaction}
+          />
+        );
+      case 'reports':
+        return (
+          <ReportsView
+            transactions={transactions}
+            totalIncome={totalIncome}
+            totalExpenses={totalExpenses}
+            categoryData={categoryData}
+          />
+        );
+      case 'settings':
+        return (
+          <SettingsView
+            userName={user?.name || 'User'}
+            userEmail={user?.email || ''}
+            onLogout={logout}
+            onClearData={clearAllTransactions}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-lg sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-              <Wallet className="w-5 h-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight">FinanceFlow</h1>
-              <p className="text-xs text-muted-foreground">Personal Finance Manager</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="container mx-auto px-4 py-8">
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <StatCard
-            title="Total Balance"
-            value={balance}
-            icon={<Wallet className="w-6 h-6" />}
-            variant="default"
-          />
-          <StatCard
-            title="Total Income"
-            value={totalIncome}
-            icon={<TrendingUp className="w-6 h-6" />}
-            variant="income"
-          />
-          <StatCard
-            title="Total Expenses"
-            value={totalExpenses}
-            icon={<TrendingDown className="w-6 h-6" />}
-            variant="expense"
-          />
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Form & Chart */}
-          <div className="space-y-6">
-            <TransactionForm onSubmit={addTransaction} />
-            <SpendingChart data={categoryData} />
-          </div>
-
-          {/* Right Column - Transaction List */}
-          <div className="lg:col-span-2">
-            <TransactionList
-              transactions={transactions}
-              onDelete={deleteTransaction}
-            />
-          </div>
+      <Sidebar
+        currentView={currentView}
+        onViewChange={setCurrentView}
+        onLogout={logout}
+        userName={user?.name || 'User'}
+      />
+      
+      {/* Main Content */}
+      <main className="pl-20 lg:pl-64 min-h-screen transition-all duration-300">
+        <div className="p-6 lg:p-8 max-w-7xl">
+          {renderView()}
         </div>
       </main>
-
-      {/* Footer */}
-      <footer className="border-t border-border/50 mt-12 py-6">
-        <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          Your data is stored locally in your browser
-        </div>
-      </footer>
     </div>
   );
 };
