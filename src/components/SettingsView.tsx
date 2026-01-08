@@ -55,7 +55,7 @@ export function SettingsView({ userName, userEmail, onLogout, onClearData }: Set
               <p className="font-medium">Currency</p>
               <p className="text-sm text-muted-foreground">Display currency for amounts</p>
             </div>
-            <span className="px-3 py-1 rounded-lg bg-secondary text-sm font-medium">USD ($)</span>
+            <span className="px-3 py-1 rounded-lg bg-secondary text-sm font-medium">INR (₹)</span>
           </div>
           <div className="flex items-center justify-between py-3 border-b border-border/30">
             <div>

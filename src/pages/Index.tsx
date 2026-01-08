@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useAuth } from '@/hooks/useAuth';
+import { useSavingsGoals } from '@/hooks/useSavingsGoals';
 import { AuthPage } from '@/components/AuthPage';
 import { Sidebar } from '@/components/Sidebar';
 import { DashboardView } from '@/components/DashboardView';
@@ -25,6 +26,7 @@ const Index = () => {
     topExpenseCategory,
     clearAllTransactions,
   } = useTransactions();
+  const { goals, addGoal, deleteGoal, clearAllGoals } = useSavingsGoals();
 
   if (isLoading) {
     return (
@@ -53,6 +55,9 @@ const Index = () => {
             onAddTransaction={addTransaction}
             onDeleteTransaction={deleteTransaction}
             userName={user?.name || 'User'}
+            goals={goals}
+            onAddGoal={addGoal}
+            onDeleteGoal={deleteGoal}
           />
         );
       case 'transactions':
@@ -79,7 +84,10 @@ const Index = () => {
             userName={user?.name || 'User'}
             userEmail={user?.email || ''}
             onLogout={logout}
-            onClearData={clearAllTransactions}
+            onClearData={() => {
+              clearAllTransactions();
+              clearAllGoals();
+            }}
           />
         );
       default:
