@@ -5,8 +5,10 @@ import { CashFlowChart } from '@/components/CashFlowChart';
 import { BudgetHealth } from '@/components/BudgetHealth';
 import { TopExpenseCard } from '@/components/TopExpenseCard';
 import { AddTransactionModal } from '@/components/AddTransactionModal';
+import { SavingsGoals } from '@/components/SavingsGoals';
 import { formatCurrency } from '@/lib/currency';
 import { categoryConfig } from '@/lib/categoryConfig';
+import { SavingsGoal } from '@/hooks/useSavingsGoals';
 import { Wallet, TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
 
 interface DashboardViewProps {
@@ -26,6 +28,9 @@ interface DashboardViewProps {
   }) => void;
   onDeleteTransaction: (id: string) => void;
   userName: string;
+  goals: SavingsGoal[];
+  onAddGoal: (goal: { name: string; targetAmount: number }) => void;
+  onDeleteGoal: (id: string) => void;
 }
 
 export function DashboardView({
@@ -39,6 +44,9 @@ export function DashboardView({
   onAddTransaction,
   onDeleteTransaction,
   userName,
+  goals,
+  onAddGoal,
+  onDeleteGoal,
 }: DashboardViewProps) {
   // Get recent transactions (last 5)
   const recentTransactions = transactions.slice(0, 5);
@@ -83,9 +91,7 @@ export function DashboardView({
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CashFlowChart transactions={transactions} />
-        <div className="grid grid-cols-1 gap-6">
-          <TopExpenseCard topExpense={topExpense} />
-        </div>
+        <TopExpenseCard topExpense={topExpense} />
       </div>
 
       {/* Spending Chart & Budget Health */}
@@ -93,6 +99,14 @@ export function DashboardView({
         <SpendingChart data={categoryData} topExpenseCategory={topExpenseCategory} />
         <BudgetHealth income={totalIncome} expenses={totalExpenses} />
       </div>
+
+      {/* Savings Goals */}
+      <SavingsGoals
+        goals={goals}
+        balance={balance}
+        onAddGoal={onAddGoal}
+        onDeleteGoal={onDeleteGoal}
+      />
 
       {/* Recent Transactions */}
       <div className="glass-card">

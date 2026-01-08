@@ -1,5 +1,6 @@
-import { TrendingUp, TrendingDown, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { TrendingDown, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { formatCurrency } from '@/lib/currency';
 
 interface BudgetHealthProps {
   income: number;
@@ -19,14 +20,6 @@ export function BudgetHealth({ income, expenses }: BudgetHealthProps) {
 
   const status = getStatus();
   const StatusIcon = status.icon;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-    }).format(amount);
-  };
 
   return (
     <div className="glass-card p-6">
