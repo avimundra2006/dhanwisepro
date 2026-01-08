@@ -10,6 +10,7 @@ interface TransactionsViewProps {
     description: string;
     category: TransactionCategory;
     type: TransactionType;
+    date: string;
   }) => void;
   onDeleteTransaction: (id: string) => void;
 }

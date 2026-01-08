@@ -1,7 +1,8 @@
-import { Transaction } from '@/types/transaction';
+import { Transaction, TransactionCategory } from '@/types/transaction';
 import { SpendingChart } from '@/components/SpendingChart';
 import { CashFlowChart } from '@/components/CashFlowChart';
 import { BudgetHealth } from '@/components/BudgetHealth';
+import { formatCurrency } from '@/lib/currency';
 import { BarChart3, Wallet, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface ReportsViewProps {
@@ -9,6 +10,7 @@ interface ReportsViewProps {
   totalIncome: number;
   totalExpenses: number;
   categoryData: Record<string, number>;
+  topExpenseCategory: { category: TransactionCategory; amount: number } | null;
 }
 
 export function ReportsView({
@@ -16,15 +18,9 @@ export function ReportsView({
   totalIncome,
   totalExpenses,
   categoryData,
+  topExpenseCategory,
 }: ReportsViewProps) {
   const balance = totalIncome - totalExpenses;
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(amount);
-  };
 
   return (
     <div className="space-y-6">
@@ -72,7 +68,7 @@ export function ReportsView({
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CashFlowChart transactions={transactions} />
-        <SpendingChart data={categoryData} />
+        <SpendingChart data={categoryData} topExpenseCategory={topExpenseCategory} />
       </div>
 
       {/* Budget Health */}

@@ -1,21 +1,22 @@
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
+import { useMemo } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { formatCurrency } from '@/lib/currency';
+import { categoryConfig } from '@/lib/categoryConfig';
+import { TransactionCategory } from '@/types/transaction';
 
 interface SpendingChartProps {
   data: Record<string, number>;
+  topExpenseCategory: { category: TransactionCategory; amount: number } | null;
 }
 
-const COLORS: Record<string, string> = {
-  Food: 'hsl(38, 92%, 50%)',
-  Bills: 'hsl(200, 80%, 55%)',
-  Salary: 'hsl(160, 84%, 45%)',
-  Fun: 'hsl(280, 70%, 60%)',
-};
-
-export function SpendingChart({ data }: SpendingChartProps) {
-  const chartData = Object.entries(data).map(([name, value]) => ({
-    name,
-    value,
-  }));
+export function SpendingChart({ data, topExpenseCategory }: SpendingChartProps) {
+  const chartData = useMemo(() => {
+    return Object.entries(data).map(([name, value]) => ({
+      name,
+      value,
+      color: categoryConfig[name as TransactionCategory]?.chartColor || 'hsl(215, 20%, 55%)',
+    }));
+  }, [data]);
 
   const total = chartData.reduce((sum, item) => sum + item.value, 0);
 
@@ -30,71 +31,76 @@ export function SpendingChart({ data }: SpendingChartProps) {
     );
   }
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
-  };
-
   return (
     <div className="glass-card p-6 animate-fade-in">
       <h2 className="text-xl font-semibold mb-4">Spending by Category</h2>
-      <ResponsiveContainer width="100%" height={280}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={100}
-            paddingAngle={4}
-            dataKey="value"
-            strokeWidth={0}
-          >
-            {chartData.map((entry) => (
-              <Cell key={entry.name} fill={COLORS[entry.name]} />
-            ))}
-          </Pie>
-          <Tooltip
-            contentStyle={{
-              backgroundColor: 'hsl(222, 47%, 10%)',
-              border: '1px solid hsl(222, 30%, 18%)',
-              borderRadius: '8px',
-              padding: '8px 12px',
-            }}
-            formatter={(value: number) => [formatCurrency(value), '']}
-            labelStyle={{ color: 'hsl(210, 40%, 98%)' }}
-          />
-          <Legend
-            verticalAlign="bottom"
-            height={36}
-            formatter={(value: string) => (
-              <span className="text-sm text-foreground">{value}</span>
-            )}
-          />
-        </PieChart>
-      </ResponsiveContainer>
+      <div className="relative">
+        <ResponsiveContainer width="100%" height={280}>
+          <PieChart>
+            <Pie
+              data={chartData}
+              cx="50%"
+              cy="50%"
+              innerRadius={70}
+              outerRadius={110}
+              paddingAngle={3}
+              dataKey="value"
+              strokeWidth={0}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={entry.color} />
+              ))}
+            </Pie>
+            <Tooltip
+              contentStyle={{
+                backgroundColor: 'hsl(222, 47%, 10%)',
+                border: '1px solid hsl(222, 30%, 18%)',
+                borderRadius: '8px',
+                padding: '8px 12px',
+              }}
+              formatter={(value: number) => [formatCurrency(value), '']}
+              labelStyle={{ color: 'hsl(210, 40%, 98%)' }}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+        
+        {/* Center Text showing Top Category */}
+        {topExpenseCategory && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+            <span className="text-xs text-muted-foreground uppercase tracking-wider">
+              {topExpenseCategory.category}
+            </span>
+            <span className="text-2xl font-bold text-foreground">
+              {formatCurrency(topExpenseCategory.amount)}
+            </span>
+          </div>
+        )}
+      </div>
       
       {/* Category breakdown */}
       <div className="mt-4 space-y-2">
-        {chartData.map((item) => (
-          <div key={item.name} className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: COLORS[item.name] }}
-              />
-              <span className="text-muted-foreground">{item.name}</span>
+        {chartData.map((item) => {
+          const config = categoryConfig[item.name as TransactionCategory];
+          const IconComponent = config?.icon;
+          return (
+            <div key={item.name} className="flex items-center justify-between text-sm">
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: item.color }}
+                />
+                {IconComponent && <IconComponent className="w-3.5 h-3.5 text-muted-foreground" />}
+                <span className="text-muted-foreground">{item.name}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-foreground font-medium">{formatCurrency(item.value)}</span>
+                <span className="text-muted-foreground text-xs w-12 text-right">
+                  {((item.value / total) * 100).toFixed(0)}%
+                </span>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <span className="text-foreground font-medium">{formatCurrency(item.value)}</span>
-              <span className="text-muted-foreground text-xs w-12 text-right">
-                {((item.value / total) * 100).toFixed(0)}%
-              </span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
