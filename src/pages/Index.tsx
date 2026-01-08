@@ -21,6 +21,8 @@ const Index = () => {
     totalExpenses,
     balance,
     categoryData,
+    topExpense,
+    topExpenseCategory,
     clearAllTransactions,
   } = useTransactions();
 
@@ -46,6 +48,8 @@ const Index = () => {
             totalExpenses={totalExpenses}
             balance={balance}
             categoryData={categoryData}
+            topExpense={topExpense}
+            topExpenseCategory={topExpenseCategory}
             onAddTransaction={addTransaction}
             onDeleteTransaction={deleteTransaction}
             userName={user?.name || 'User'}
@@ -66,6 +70,7 @@ const Index = () => {
             totalIncome={totalIncome}
             totalExpenses={totalExpenses}
             categoryData={categoryData}
+            topExpenseCategory={topExpenseCategory}
           />
         );
       case 'settings':

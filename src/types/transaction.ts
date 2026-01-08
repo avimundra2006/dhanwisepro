@@ -1,4 +1,13 @@
-export type TransactionCategory = 'Food' | 'Bills' | 'Salary' | 'Fun';
+export type TransactionCategory = 
+  | 'Food & Dining' 
+  | 'Transport' 
+  | 'Bills & Utilities' 
+  | 'Shopping' 
+  | 'Entertainment' 
+  | 'Health' 
+  | 'Miscellaneous' 
+  | 'Salary';
+
 export type TransactionType = 'income' | 'expense';
 
 export interface Transaction {
@@ -7,5 +16,6 @@ export interface Transaction {
   description: string;
   category: TransactionCategory;
   type: TransactionType;
+  date: string;
   createdAt: string;
 }

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Transaction } from '@/types/transaction';
+import { useState, useEffect, useMemo } from 'react';
+import { Transaction, TransactionCategory } from '@/types/transaction';
 
 const STORAGE_KEY = 'finance-transactions';
 
@@ -34,6 +34,15 @@ export function useTransactions() {
     saveToStorage(updated);
   };
 
+  // Sort transactions by date (newest first)
+  const sortedTransactions = useMemo(() => {
+    return [...transactions].sort((a, b) => {
+      const dateA = new Date(a.date || a.createdAt).getTime();
+      const dateB = new Date(b.date || b.createdAt).getTime();
+      return dateB - dateA;
+    });
+  }, [transactions]);
+
   const totals = transactions.reduce(
     (acc, t) => {
       if (t.type === 'income') {
@@ -53,13 +62,27 @@ export function useTransactions() {
       return acc;
     }, {} as Record<string, number>);
 
+  // Find top expense (single most expensive item)
+  const topExpense = useMemo(() => {
+    const expenses = transactions.filter((t) => t.type === 'expense');
+    if (expenses.length === 0) return null;
+    return expenses.reduce((max, t) => (t.amount > max.amount ? t : max), expenses[0]);
+  }, [transactions]);
+
+  // Find top expense category
+  const topExpenseCategory = useMemo(() => {
+    if (Object.keys(categoryData).length === 0) return null;
+    const sorted = Object.entries(categoryData).sort(([, a], [, b]) => b - a);
+    return { category: sorted[0][0] as TransactionCategory, amount: sorted[0][1] };
+  }, [categoryData]);
+
   const clearAllTransactions = () => {
     setTransactions([]);
     localStorage.removeItem(STORAGE_KEY);
   };
 
   return {
-    transactions,
+    transactions: sortedTransactions,
     addTransaction,
     deleteTransaction,
     clearAllTransactions,
@@ -67,5 +90,7 @@ export function useTransactions() {
     totalExpenses: totals.expenses,
     balance: totals.income - totals.expenses,
     categoryData,
+    topExpense,
+    topExpenseCategory,
   };
 }

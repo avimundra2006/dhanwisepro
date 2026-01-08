@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { formatCurrency } from '@/lib/currency';
 
 interface StatCardProps {
   title: string;
@@ -8,14 +9,6 @@ interface StatCardProps {
 }
 
 export function StatCard({ title, value, icon, variant = 'default' }: StatCardProps) {
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 2,
-    }).format(amount);
-  };
-
   const variantClasses = {
     default: 'text-foreground',
     income: 'text-income',

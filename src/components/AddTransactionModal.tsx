@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { format } from 'date-fns';
 import { TransactionCategory, TransactionType } from '@/types/transaction';
+import { categories, categoryConfig } from '@/lib/categoryConfig';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Plus, DollarSign, FileText, Tag, X } from 'lucide-react';
+import { Plus, FileText, Tag, CalendarIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface AddTransactionModalProps {
   onSubmit: (transaction: {
@@ -18,22 +23,17 @@ interface AddTransactionModalProps {
     description: string;
     category: TransactionCategory;
     type: TransactionType;
+    date: string;
   }) => void;
 }
-
-const categories: { value: TransactionCategory; label: string; color: string }[] = [
-  { value: 'Food', label: 'Food & Dining', color: 'bg-chart-food' },
-  { value: 'Bills', label: 'Bills & Utilities', color: 'bg-chart-bills' },
-  { value: 'Salary', label: 'Salary & Income', color: 'bg-chart-salary' },
-  { value: 'Fun', label: 'Entertainment', color: 'bg-chart-fun' },
-];
 
 export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
   const [open, setOpen] = useState(false);
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
-  const [category, setCategory] = useState<TransactionCategory>('Food');
+  const [category, setCategory] = useState<TransactionCategory>('Food & Dining');
   const [type, setType] = useState<TransactionType>('expense');
+  const [date, setDate] = useState<Date>(new Date());
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,20 +44,19 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
       description: description.trim(),
       category,
       type,
+      date: date.toISOString(),
     });
 
-    setAmount('');
-    setDescription('');
-    setCategory('Food');
-    setType('expense');
+    resetForm();
     setOpen(false);
   };
 
   const resetForm = () => {
     setAmount('');
     setDescription('');
-    setCategory('Food');
+    setCategory('Food & Dining');
     setType('expense');
+    setDate(new Date());
   };
 
   return (
@@ -71,7 +70,7 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
           Add Transaction
         </Button>
       </DialogTrigger>
-      <DialogContent className="glass-card border-border/50 max-w-md">
+      <DialogContent className="glass-card border-border/50 max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
@@ -81,7 +80,7 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
           </DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
+        <form onSubmit={handleSubmit} className="space-y-5 mt-4">
           {/* Type Toggle */}
           <div className="flex gap-2 p-1 bg-secondary rounded-xl">
             <button
@@ -111,20 +110,51 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
           {/* Amount */}
           <div className="space-y-2">
             <Label htmlFor="modal-amount" className="text-muted-foreground flex items-center gap-2">
-              <DollarSign className="w-4 h-4" />
+              <span className="text-lg">₹</span>
               Amount
             </Label>
             <Input
               id="modal-amount"
               type="number"
-              step="0.01"
+              step="1"
               min="0"
-              placeholder="0.00"
+              placeholder="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className="bg-secondary/50 border-border/50 text-2xl h-14 font-semibold"
               required
             />
+          </div>
+
+          {/* Date Picker */}
+          <div className="space-y-2">
+            <Label className="text-muted-foreground flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4" />
+              Date
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal h-12 bg-secondary/50 border-border/50",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(d) => d && setDate(d)}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Description */}
@@ -152,21 +182,25 @@ export function AddTransactionModal({ onSubmit }: AddTransactionModalProps) {
               Category
             </Label>
             <div className="grid grid-cols-2 gap-2">
-              {categories.map((cat) => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  onClick={() => setCategory(cat.value)}
-                  className={`py-3 px-4 rounded-xl text-sm font-medium transition-all duration-200 border flex items-center gap-2 ${
-                    category === cat.value
-                      ? 'border-primary bg-primary/10 text-primary'
-                      : 'border-border/50 bg-secondary/50 text-muted-foreground hover:border-primary/50 hover:text-foreground'
-                  }`}
-                >
-                  <div className={`w-2.5 h-2.5 rounded-full ${cat.color}`} />
-                  {cat.label}
-                </button>
-              ))}
+              {categories.map((cat) => {
+                const config = categoryConfig[cat];
+                const IconComponent = config.icon;
+                return (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => setCategory(cat)}
+                    className={`py-3 px-3 rounded-xl text-sm font-medium transition-all duration-200 border flex items-center gap-2 ${
+                      category === cat
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border/50 bg-secondary/50 text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                    }`}
+                  >
+                    <IconComponent className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">{config.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
