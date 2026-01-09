@@ -5,7 +5,62 @@
 @tailwind utilities;
 
 @layer base {
+  /* Light Mode (Default) */
   :root {
+    --background: 210 20% 98%;
+    --foreground: 222 47% 11%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+
+    --primary: 160 84% 39%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 222 47% 11%;
+
+    --muted: 210 20% 94%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 160 84% 39%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 160 84% 39%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 11%;
+
+    --expense: 0 72% 55%;
+    --income: 160 84% 39%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 160 84% 39%;
+
+    --radius: 0.75rem;
+
+    --chart-food: 38 92% 50%;
+    --chart-bills: 200 80% 50%;
+    --chart-salary: 160 84% 39%;
+    --chart-fun: 280 70% 55%;
+
+    --chart-text: 215 16% 47%;
+    --chart-grid: 214 32% 91%;
+
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(210 20% 98%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(160 84% 30%) 100%);
+    --shadow-glow: 0 0 40px -10px hsl(160 84% 39% / 0.2);
+  }
+
+  /* Dark Mode */
+  .dark {
     --background: 222 47% 6%;
     --foreground: 210 40% 98%;
 
@@ -43,12 +98,8 @@
     --input: 222 30% 14%;
     --ring: 160 84% 39%;
 
-    --radius: 0.75rem;
-
-    --chart-food: 38 92% 50%;
-    --chart-bills: 200 80% 55%;
-    --chart-salary: 160 84% 45%;
-    --chart-fun: 280 70% 60%;
+    --chart-text: 215 20% 65%;
+    --chart-grid: 222 30% 18%;
 
     --gradient-card: linear-gradient(135deg, hsl(222 47% 10%) 0%, hsl(222 47% 8%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(160 84% 39%) 0%, hsl(160 84% 30%) 100%);
@@ -58,7 +109,11 @@
 
 @layer base {
   * {
-    @apply border-border;
+    @apply border-border transition-colors duration-200;
+  }
+
+  html {
+    @apply transition-colors duration-300;
   }
 
   body {
@@ -74,6 +129,12 @@
 @layer components {
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-xl;
+    box-shadow: 
+      0 4px 24px -4px hsl(var(--foreground) / 0.1),
+      inset 0 1px 0 0 hsl(var(--foreground) / 0.02);
+  }
+
+  .dark .glass-card {
     box-shadow: 
       0 4px 24px -4px hsl(222 47% 4% / 0.5),
       inset 0 1px 0 0 hsl(210 40% 98% / 0.05);

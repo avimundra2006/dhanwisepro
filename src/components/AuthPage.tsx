@@ -56,8 +56,8 @@ export function AuthPage({ onLogin, onSignUp }: AuthPageProps) {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary/60 mb-4 shadow-xl shadow-primary/25">
             <Wallet className="w-8 h-8 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">FinanceFlow</h1>
-          <p className="text-muted-foreground mt-2">Your premium finance companion</p>
+          <h1 className="text-3xl font-bold tracking-tight">Smart Budget Tracker</h1>
+          <p className="text-muted-foreground mt-2">Track your finances intelligently</p>
         </div>
 
         {/* Auth Card */}

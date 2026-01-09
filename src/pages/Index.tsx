@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useAuth } from '@/hooks/useAuth';
 import { useSavingsGoals } from '@/hooks/useSavingsGoals';
+import { useTheme } from '@/hooks/useTheme';
 import { AuthPage } from '@/components/AuthPage';
 import { Sidebar } from '@/components/Sidebar';
 import { DashboardView } from '@/components/DashboardView';
@@ -13,6 +14,7 @@ type View = 'dashboard' | 'transactions' | 'reports' | 'settings';
 
 const Index = () => {
   const { user, isLoading, isAuthenticated, login, signUp, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [currentView, setCurrentView] = useState<View>('dashboard');
   const {
     transactions,
@@ -88,6 +90,8 @@ const Index = () => {
               clearAllTransactions();
               clearAllGoals();
             }}
+            theme={theme}
+            onToggleTheme={toggleTheme}
           />
         );
       default:
