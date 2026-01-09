@@ -79,9 +79,9 @@ export function SpendingChart({ data, topExpenseCategory }: SpendingChartProps) 
       
       {/* Category breakdown */}
       <div className="mt-4 space-y-2">
-        {chartData.map((item) => {
-          const config = categoryConfig[item.name as TransactionCategory];
-          const IconComponent = config?.icon;
+      {chartData.map((item) => {
+          const config = categoryConfig[item.name as TransactionCategory] || categoryConfig['Miscellaneous'];
+          const IconComponent = config.icon;
           return (
             <div key={item.name} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">

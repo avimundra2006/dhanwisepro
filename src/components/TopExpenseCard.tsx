@@ -18,7 +18,7 @@ export function TopExpenseCard({ topExpense }: TopExpenseCardProps) {
     );
   }
 
-  const config = categoryConfig[topExpense.category];
+  const config = categoryConfig[topExpense.category] || categoryConfig['Miscellaneous'];
   const IconComponent = config.icon;
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-IN', {
