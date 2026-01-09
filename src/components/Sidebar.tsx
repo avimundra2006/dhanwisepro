@@ -34,8 +34,8 @@ export function Sidebar({ currentView, onViewChange, onLogout, userName }: Sideb
           </div>
           {!isCollapsed && (
             <div className="overflow-hidden">
-              <h1 className="text-lg font-bold tracking-tight truncate">FinanceFlow</h1>
-              <p className="text-xs text-muted-foreground truncate">Premium Dashboard</p>
+              <h1 className="text-lg font-bold tracking-tight truncate">Smart Budget</h1>
+              <p className="text-xs text-muted-foreground truncate">Track Intelligently</p>
             </div>
           )}
         </div>

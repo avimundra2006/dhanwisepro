@@ -53,13 +53,14 @@ export function SpendingChart({ data, topExpenseCategory }: SpendingChartProps) 
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: 'hsl(222, 47%, 10%)',
-                border: '1px solid hsl(222, 30%, 18%)',
+                backgroundColor: 'hsl(var(--card))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
                 padding: '8px 12px',
+                color: 'hsl(var(--foreground))',
               }}
               formatter={(value: number) => [formatCurrency(value), '']}
-              labelStyle={{ color: 'hsl(210, 40%, 98%)' }}
+              labelStyle={{ color: 'hsl(var(--foreground))' }}
             />
           </PieChart>
         </ResponsiveContainer>

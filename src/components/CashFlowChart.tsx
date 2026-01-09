@@ -56,44 +56,45 @@ export function CashFlowChart({ transactions }: CashFlowChartProps) {
         <AreaChart data={chartData}>
           <defs>
             <linearGradient id="spendingGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="hsl(0, 72%, 60%)" stopOpacity={0.5} />
-              <stop offset="95%" stopColor="hsl(0, 72%, 60%)" stopOpacity={0} />
+              <stop offset="5%" stopColor="hsl(var(--expense))" stopOpacity={0.5} />
+              <stop offset="95%" stopColor="hsl(var(--expense))" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="hsl(222, 30%, 18%)" vertical={false} />
+          <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--chart-grid))" vertical={false} />
           <XAxis
             dataKey="displayDate"
             axisLine={false}
             tickLine={false}
-            tick={{ fill: 'hsl(215, 20%, 55%)', fontSize: 11 }}
+            tick={{ fill: 'hsl(var(--chart-text))', fontSize: 11 }}
             interval="preserveStartEnd"
           />
           <YAxis
             axisLine={false}
             tickLine={false}
-            tick={{ fill: 'hsl(215, 20%, 55%)', fontSize: 11 }}
+            tick={{ fill: 'hsl(var(--chart-text))', fontSize: 11 }}
             tickFormatter={(value) => `₹${value}`}
             width={60}
           />
           <Tooltip
             contentStyle={{
-              backgroundColor: 'hsl(222, 47%, 10%)',
-              border: '1px solid hsl(222, 30%, 18%)',
+              backgroundColor: 'hsl(var(--card))',
+              border: '1px solid hsl(var(--border))',
               borderRadius: '12px',
               padding: '12px',
+              color: 'hsl(var(--foreground))',
             }}
             formatter={(value: number) => [formatCurrency(value), 'Spending']}
             labelFormatter={(label) => label}
-            labelStyle={{ color: 'hsl(210, 40%, 98%)', marginBottom: '4px' }}
+            labelStyle={{ color: 'hsl(var(--foreground))', marginBottom: '4px' }}
           />
           <Area
             type="monotone"
             dataKey="spending"
-            stroke="hsl(0, 72%, 60%)"
+            stroke="hsl(var(--expense))"
             strokeWidth={2.5}
             fill="url(#spendingGradient)"
             dot={false}
-            activeDot={{ r: 6, fill: 'hsl(0, 72%, 60%)', strokeWidth: 2, stroke: 'white' }}
+            activeDot={{ r: 6, fill: 'hsl(var(--expense))', strokeWidth: 2, stroke: 'hsl(var(--background))' }}
           />
         </AreaChart>
       </ResponsiveContainer>

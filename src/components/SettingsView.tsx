@@ -1,4 +1,4 @@
-import { Settings, User, Trash2, Shield, Bell, LogOut } from 'lucide-react';
+import { Settings, User, Trash2, Shield, Bell, LogOut, Sun, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface SettingsViewProps {
@@ -6,9 +6,18 @@ interface SettingsViewProps {
   userEmail: string;
   onLogout: () => void;
   onClearData: () => void;
+  theme: 'light' | 'dark';
+  onToggleTheme: () => void;
 }
 
-export function SettingsView({ userName, userEmail, onLogout, onClearData }: SettingsViewProps) {
+export function SettingsView({ 
+  userName, 
+  userEmail, 
+  onLogout, 
+  onClearData,
+  theme,
+  onToggleTheme,
+}: SettingsViewProps) {
   return (
     <div className="space-y-6 max-w-2xl">
       {/* Header */}
@@ -62,7 +71,22 @@ export function SettingsView({ userName, userEmail, onLogout, onClearData }: Set
               <p className="font-medium">Theme</p>
               <p className="text-sm text-muted-foreground">App appearance</p>
             </div>
-            <span className="px-3 py-1 rounded-lg bg-secondary text-sm font-medium">Dark Mode</span>
+            <button
+              onClick={onToggleTheme}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
+            >
+              {theme === 'dark' ? (
+                <>
+                  <Moon className="w-4 h-4 text-primary" />
+                  <span className="text-sm font-medium">Dark</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="w-4 h-4 text-warning" />
+                  <span className="text-sm font-medium">Light</span>
+                </>
+              )}
+            </button>
           </div>
           <div className="flex items-center justify-between py-3">
             <div>
